@@ -33,4 +33,15 @@ contract.interaction({
 contract.finalize(); // fails if not all interactions occurred...
 
 hobbes.verify('url', file);
+
+
+hobbes:
+  contract
+  like
+  eachLike
+  verify
+
+contract:
+  interaction
+  finalize
 */
