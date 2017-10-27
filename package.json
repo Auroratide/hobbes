@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "mocha './src/**/*.spec.js'"
+    "test": "mocha './{src,test}/**/*.spec.js'"
   },
   "author": "Timothy Foster",
   "license": "MIT",
