@@ -1,12 +1,14 @@
+const path = require('path');
 const { expect } = require('chai');
 const hobbes = require('..');
 const api = require('./api');
 
 describe('Hobbes Functional Test', () => {
   const contract = hobbes.contract({
-    consumer: 'Consumer',
-    provider: 'Provider',
-    port: 4567
+    consumer: 'FunctionalConsumer',
+    provider: 'FunctionalProvider',
+    port: 4567,
+    directory: path.resolve(__dirname, '..', 'contracts')
   });
 
   describe('GET /endpoint', () => {

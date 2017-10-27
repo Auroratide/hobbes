@@ -1,9 +1,22 @@
+const path = require('path');
 const nock = require('nock');
+const fs = require('./utils/fs');
+
+const withoutInterceptors = interactions => Object.keys(interactions).reduce((i, key) => {
+  i[key] = {
+    request: interactions[key].request,
+    response: interactions[key].response
+  };
+
+  return i;
+}, {});
 
 function Contract(options = {}) {
   this.consumer = options.consumer;
   this.provider = options.provider;
   this.port = options.port;
+  this.directory = options.directory;
+
   this.interactions = {};
 }
 
@@ -27,6 +40,12 @@ Contract.prototype.finalize = function() {
     if(!interaction.interceptor.isDone())
       throw new Error('FAILURE');
   });
+
+  return fs.writeFile(path.resolve(this.directory, `${this.consumer}-${this.provider}.json`), JSON.stringify({
+    consumer: this.consumer,
+    provider: this.provider,
+    interactions: withoutInterceptors(this.interactions)
+  }));
 };
 
 module.exports = Contract;
