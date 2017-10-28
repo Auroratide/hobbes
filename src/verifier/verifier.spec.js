@@ -6,6 +6,27 @@ const td = require('testdouble');
 describe('Verifier', () => {
   const BASE_URL = 'http://localhost:4567';
 
+  const createContract = () => { return { interactions: {} }};
+
+  const createGet = (path, responseBody) => {
+    td.when(ObjectMatcher.prototype.matches(responseBody)).thenReturn(true);
+    const interceptor = nock(BASE_URL)
+      .get(path)
+      .reply(200, responseBody);
+
+    return {
+      request: {
+        method: 'GET',
+        path
+      },
+      response: {
+        status: 200,
+        body: responseBody
+      },
+      nock: interceptor
+    };
+  };
+
   let ObjectMatcher;
   let Verifier;
   let verifier;
@@ -21,110 +42,37 @@ describe('Verifier', () => {
 
   describe('verify', () => {
     it('should succeed when the contract has no interactions', () => {
-      const contract = { interactions: {} };
-
+      const contract = createContract();
       return verifier.verify(contract);
     });
 
     it('should verify a single interaction', () => {
-      const responseBody = { field: 'value' };
-      const PATH = '/endpoint';
-
-      td.when(ObjectMatcher.prototype.matches(td.matchers.anything())).thenReturn(true);
-
-      const interaction = nock(BASE_URL)
-        .get(PATH)
-        .reply(200, responseBody);
-
-      const contract = {
-        interactions: {
-          'GET /endpoint': {
-            request: {
-              method: 'GET',
-              path: PATH
-            },
-            response: {
-              status: 200,
-              body: responseBody
-            }
-          }
-        }
-      };
+      const contract = createContract();
+      contract.interactions['GET /endpoint'] = createGet('/endpoint', { field: 'value' });
 
       return verifier.verify(contract).then(() => {
-        expect(interaction.isDone()).to.be.true;
+        expect(contract.interactions['GET /endpoint'].nock.isDone()).to.be.true;
       });
     });
 
     it('should verify multiple interactions', () => {
-      const path = value => `/endpoint/${value}`;
-      const responseBody = value => { return { field: value } };
-
-      const firstInteraction = nock(BASE_URL)
-        .get(path(1))
-        .reply(200, responseBody(1));
-
-      const secondInteraction = nock(BASE_URL)
-        .get(path(2))
-        .reply(200, responseBody(2));
-
-      td.when(ObjectMatcher.prototype.matches(td.matchers.anything())).thenReturn(true);
-
-      const contract = {
-        interactions: {
-          'GET /endpoint/1': {
-            request: {
-              method: 'GET',
-              path: path(1)
-            },
-            response: {
-              status: 200,
-              body: responseBody(1)
-            }
-          },
-          'GET /endpoint/2': {
-            request: {
-              method: 'GET',
-              path: path(2)
-            },
-            response: {
-              status: 200,
-              body: responseBody(2)
-            }
-          }
-        }
-      };
+      const contract = createContract();
+      contract.interactions['GET /endpoint/1'] = createGet('/endpoint/1', { field: 1 });
+      contract.interactions['GET /endpoint/2'] = createGet('/endpoint/2', { field: 2 });
 
       return verifier.verify(contract).then(() => {
-        expect(firstInteraction.isDone()).to.be.true;
-        expect(secondInteraction.isDone()).to.be.true;
+        expect(contract.interactions['GET /endpoint/1'].nock.isDone()).to.be.true;
+        expect(contract.interactions['GET /endpoint/1'].nock.isDone()).to.be.true;
       });
     });
 
     it('should throw when the status does not match', () => {
-      const responseBody = { field: 'value' };
-      const PATH = '/endpoint';
-
-      td.when(ObjectMatcher.prototype.matches(responseBody)).thenReturn(true);
+      const contract = createContract();
 
       const interaction = nock(BASE_URL)
-        .get(PATH)
-        .reply(404, responseBody);
-
-      const contract = {
-        interactions: {
-          'GET /endpoint': {
-            request: {
-              method: 'GET',
-              path: PATH
-            },
-            response: {
-              status: 200,
-              body: responseBody
-            }
-          }
-        }
-      };
+        .get('/bad-endpoint')
+        .reply(404, {});
+      contract.interactions['GET /bad-endpoint'] = createGet('/bad-endpoint', { field: 'value' });
 
       return new Promise((resolve, reject) => {
         verifier.verify(contract).then(() => {
@@ -136,29 +84,9 @@ describe('Verifier', () => {
     });
 
     it('should throw when the response body does not match', () => {
-      const responseBody = { field: 'value' };
-      const PATH = '/endpoint';
-
-      td.when(ObjectMatcher.prototype.matches(responseBody)).thenReturn(false);
-
-      const interaction = nock(BASE_URL)
-        .get(PATH)
-        .reply(200, responseBody);
-
-      const contract = {
-        interactions: {
-          'GET /endpoint': {
-            request: {
-              method: 'GET',
-              path: PATH
-            },
-            response: {
-              status: 200,
-              body: responseBody
-            }
-          }
-        }
-      };
+      const contract = createContract();
+      contract.interactions['GET /endpoint'] = createGet('/endpoint', { field: 'value' });
+      td.when(ObjectMatcher.prototype.matches({ field: 'value' })).thenReturn(false);
 
       return new Promise((resolve, reject) => {
         verifier.verify(contract).then(() => {
