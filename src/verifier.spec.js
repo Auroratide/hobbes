@@ -91,5 +91,38 @@ describe('Verifier', () => {
         expect(secondInteraction.isDone()).to.be.true;
       });
     });
+
+    it('should throw when the status does not match', () => {
+      const responseBody = { field: 'value' };
+      const PATH = '/endpoint';
+
+      const interaction = nock(BASE_URL)
+        .get(PATH)
+        .reply(404, responseBody);
+
+      const contract = {
+        interactions: {
+          'GET /endpoint': {
+            request: {
+              method: 'GET',
+              path: PATH
+            },
+            response: {
+              status: 200,
+              body: responseBody
+            }
+          }
+        }
+      };
+
+      return new Promise((resolve, reject) => {
+        verifier.verify(contract).then(() => {
+          reject('Promise was resolved but should have been rejected');
+        }).catch(err => {
+          console.log(err);
+          resolve();
+        });
+      });
+    });
   });
 });
