@@ -1,16 +1,21 @@
 const { expect } = require('chai');
 const axios = require('axios');
 const nock = require('nock');
-const Verifier = require('./verifier');
+const td = require('testdouble');
 
 describe('Verifier', () => {
   const BASE_URL = 'http://localhost:4567';
+
+  let ObjectMatcher;
+  let Verifier;
   let verifier;
   const request = axios.create({
     baseURL: BASE_URL
   });
 
   beforeEach(() => {
+    ObjectMatcher = td.replace('./object-matcher');
+    Verifier = require('./verifier');
     verifier = new Verifier(request);
   });
 
@@ -24,6 +29,8 @@ describe('Verifier', () => {
     it('should verify a single interaction', () => {
       const responseBody = { field: 'value' };
       const PATH = '/endpoint';
+
+      td.when(ObjectMatcher.prototype.matches(td.matchers.anything())).thenReturn(true);
 
       const interaction = nock(BASE_URL)
         .get(PATH)
@@ -61,6 +68,8 @@ describe('Verifier', () => {
         .get(path(2))
         .reply(200, responseBody(2));
 
+      td.when(ObjectMatcher.prototype.matches(td.matchers.anything())).thenReturn(true);
+
       const contract = {
         interactions: {
           'GET /endpoint/1': {
@@ -96,6 +105,8 @@ describe('Verifier', () => {
       const responseBody = { field: 'value' };
       const PATH = '/endpoint';
 
+      td.when(ObjectMatcher.prototype.matches(responseBody)).thenReturn(true);
+
       const interaction = nock(BASE_URL)
         .get(PATH)
         .reply(404, responseBody);
@@ -119,7 +130,40 @@ describe('Verifier', () => {
         verifier.verify(contract).then(() => {
           reject('Promise was resolved but should have been rejected');
         }).catch(err => {
-          console.log(err);
+          resolve();
+        });
+      });
+    });
+
+    it('should throw when the response body does not match', () => {
+      const responseBody = { field: 'value' };
+      const PATH = '/endpoint';
+
+      td.when(ObjectMatcher.prototype.matches(responseBody)).thenReturn(false);
+
+      const interaction = nock(BASE_URL)
+        .get(PATH)
+        .reply(200, responseBody);
+
+      const contract = {
+        interactions: {
+          'GET /endpoint': {
+            request: {
+              method: 'GET',
+              path: PATH
+            },
+            response: {
+              status: 200,
+              body: responseBody
+            }
+          }
+        }
+      };
+
+      return new Promise((resolve, reject) => {
+        verifier.verify(contract).then(() => {
+          reject('Promise was resolved but should have been rejected');
+        }).catch(err => {
           resolve();
         });
       });
