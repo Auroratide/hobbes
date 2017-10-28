@@ -5,6 +5,9 @@ const request = axios.create({
 
 const getTitle = () => request.get('/endpoint').then(res => res.data.title);
 
+const postTitle = (title) => request.post('/endpoint', { title }).then(res => res.data.title);
+
 module.exports = {
-  getTitle
+  getTitle,
+  postTitle
 };

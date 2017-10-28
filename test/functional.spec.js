@@ -40,6 +40,37 @@ describe('Hobbes Functional Test', () => {
     });
   });
 
+  describe('POST /endpoint', () => {
+    const REQUEST = {
+      title: 'Cool Title'
+    };
+
+    const EXPECTED_BODY = {
+      id: '12346',
+      title: 'Cool Title'
+    };
+
+    before(() => {
+      contract.interaction({
+        request: {
+          method: 'POST',
+          path: '/endpoint',
+          body: REQUEST
+        },
+        response: {
+          status: 201,
+          body: EXPECTED_BODY
+        }
+      });
+    });
+
+    it('should post the title', () => {
+      return api.postTitle('Cool Tilte').then(title => {
+        expect(title).to.equal('Cool Title');
+      });
+    });
+  });
+
   after(() => {
     let serverInstance;
     return contract.finalize().then(() => {

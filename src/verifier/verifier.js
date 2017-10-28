@@ -14,7 +14,8 @@ Verifier.prototype.verify = function(contract) {
 
     return this.http({
       method: request.method,
-      url: request.path
+      url: request.path,
+      data: request.body
     }).catch(err => {
       return err.response;
     }).then(res => {
