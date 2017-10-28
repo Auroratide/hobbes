@@ -1,7 +1,7 @@
 {
   "name": "hobbes",
   "version": "0.1.0",
-  "description": "",
+  "description": "Lightweight contract testing.",
   "main": "index.js",
   "scripts": {
     "test": "npm-run-all test:unit test:functional",
@@ -9,7 +9,14 @@
     "test:functional": "mocha './test/**/*.spec.js'",
     "clean": "rm -rf contracts"
   },
-  "author": "Timothy Foster",
+  "author": {
+    "name": "Timothy Foster",
+    "url": "http://auroratide.com"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Auroratide/hobbes.git"
+},
   "license": "MIT",
   "dependencies": {
     "axios": "^0.17.0",
