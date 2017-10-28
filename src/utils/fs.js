@@ -18,6 +18,17 @@ const writeFile = (filepath, contents) => new Promise((resolve, reject) => {
   });
 });
 
+const readJson = (filepath) => new Promise((resolve, reject) => {
+  fs.readFile(filepath, (err, data) => {
+    if(err) {
+      reject(err);
+    } else {
+      resolve(JSON.parse(data));
+    }
+  });
+});
+
 module.exports = {
-  writeFile
+  writeFile,
+  readJson
 };

@@ -1,47 +1,21 @@
+const axios = require('axios');
+const fs = require('./utils/fs');
 const Contract = require('./contract');
+const Verifier = require('./verifier');
 
 const contract = options => new Contract(options);
 
-module.exports = {
-  contract
+const verify = options => {
+  return fs.readJson(options.contract).then(data => {
+    const http = axios.create({
+      baseURL: options.baseURL
+    });
+
+    return new Verifier(http).verify(data);
+  });
 };
 
-/*
-hobbes.contract({
-  consumer: '',
-  provider: '',
-  port: 0
-});
-
-contract.interaction({
-  name: '',
-  request: {
-    method: 'GET',
-    path: ''
-  },
-  response: {
-    status: 200,
-    body: {
-      field: hobbes.like('string'),
-      arr: hobbes.eachLike({
-
-      })
-    }
-  }
-});
-
-contract.finalize(); // fails if not all interactions occurred...
-
-hobbes.verify('url', file);
-
-
-hobbes:
-  contract
-  like
-  eachLike
+module.exports = {
+  contract,
   verify
-
-contract:
-  interaction
-  finalize
-*/
+};

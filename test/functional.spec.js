@@ -1,14 +1,17 @@
 const path = require('path');
-const { expect } = require('chai');
+const { expect, assert } = require('chai');
 const hobbes = require('..');
 const api = require('./api');
+const server = require('./server');
 
 describe('Hobbes Functional Test', () => {
+  const CONTRACT_FILE_DIR = path.resolve(__dirname, '..', 'contracts');
+
   const contract = hobbes.contract({
     consumer: 'FunctionalConsumer',
     provider: 'FunctionalProvider',
     port: 4567,
-    directory: path.resolve(__dirname, '..', 'contracts')
+    directory: CONTRACT_FILE_DIR
   });
 
   describe('GET /endpoint', () => {
@@ -37,5 +40,19 @@ describe('Hobbes Functional Test', () => {
     });
   });
 
-  after(() => contract.finalize());
+  after(() => {
+    let serverInstance;
+    return contract.finalize().then(() => {
+      serverInstance = server.listen(7654);
+      return hobbes.verify({
+        baseURL: 'http://localhost:7654',
+        contract: path.join(CONTRACT_FILE_DIR, 'FunctionalConsumer-FunctionalProvider.json')
+      });
+    }).then(() => {
+      serverInstance.close();
+    }).catch(err => {
+      serverInstance.close();
+      throw err;
+    });;
+  });
 });
