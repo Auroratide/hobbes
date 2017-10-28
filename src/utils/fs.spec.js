@@ -2,18 +2,18 @@ const fs = require('fs');
 const path = require('path');
 const mkdirp = require('mkdirp');
 const { expect } = require('chai');
-const { writeFile, readJson } = require('./fs');
+const { writeJson, readJson } = require('./fs');
 const rimraf = require('rimraf');
 
 describe('fs', () => {
-  describe('writeFile', () => {
+  describe('writeJson', () => {
     it('should create the file before writing', () => {
       const tmpPath = path.resolve(__dirname, '..', '..', 'tmp');
       rimraf.sync(tmpPath);
 
-      return writeFile(path.resolve(tmpPath, 'file.txt'), 'content').then(() => {
+      return writeJson(path.resolve(tmpPath, 'file.json'), { field: 1 }).then(() => {
         const files = fs.readdirSync(tmpPath);
-        expect(files).to.contain('file.txt');
+        expect(files).to.contain('file.json');
         rimraf.sync(tmpPath);
       }).catch(err => {
         rimraf.sync(tmpPath);

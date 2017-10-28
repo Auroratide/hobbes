@@ -41,11 +41,11 @@ Contract.prototype.finalize = function() {
       throw new Error('FAILURE');
   });
 
-  return fs.writeFile(path.resolve(this.directory, `${this.consumer}-${this.provider}.json`), JSON.stringify({
+  return fs.writeJson(path.resolve(this.directory, `${this.consumer}-${this.provider}.json`), {
     consumer: this.consumer,
     provider: this.provider,
     interactions: withoutInterceptors(this.interactions)
-  }));
+  });
 };
 
 module.exports = Contract;

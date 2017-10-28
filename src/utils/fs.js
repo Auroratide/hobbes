@@ -2,12 +2,12 @@ const fs = require('fs');
 const path = require('path');
 const mkdirp = require('mkdirp');
 
-const writeFile = (filepath, contents) => new Promise((resolve, reject) => {
+const writeJson = (filepath, contents) => new Promise((resolve, reject) => {
   mkdirp(path.dirname(filepath), err => {
     if(err) {
       reject(err);
     } else {
-      fs.writeFile(filepath, contents, err => {
+      fs.writeFile(filepath, JSON.stringify(contents), err => {
         if(err) {
           reject(err);
         } else {
@@ -29,6 +29,6 @@ const readJson = (filepath) => new Promise((resolve, reject) => {
 });
 
 module.exports = {
-  writeFile,
+  writeJson,
   readJson
 };
