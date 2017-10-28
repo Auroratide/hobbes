@@ -169,4 +169,6 @@ describe('Verifier', () => {
       });
     });
   });
+
+  afterEach(() => td.reset());
 });
