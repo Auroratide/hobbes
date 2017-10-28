@@ -1,6 +1,6 @@
 const path = require('path');
 const nock = require('nock');
-const fs = require('./utils/fs');
+const fs = require('../utils/fs');
 
 const withoutInterceptors = interactions => Object.keys(interactions).reduce((i, key) => {
   i[key] = {

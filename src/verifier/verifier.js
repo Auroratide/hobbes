@@ -1,7 +1,7 @@
 const path = require('path');
 const nock = require('nock');
-const fs = require('./utils/fs');
-const ObjectMatcher = require('./object-matcher');
+const fs = require('../utils/fs');
+const ObjectMatcher = require('../object-matcher');
 
 function Verifier(http) {
   this.http = http;

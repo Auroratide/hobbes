@@ -14,7 +14,7 @@ describe('Verifier', () => {
   });
 
   beforeEach(() => {
-    ObjectMatcher = td.replace('./object-matcher');
+    ObjectMatcher = td.replace('../object-matcher');
     Verifier = require('./verifier');
     verifier = new Verifier(request);
   });
