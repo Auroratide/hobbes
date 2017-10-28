@@ -1,6 +1,6 @@
 {
   "name": "hobbes",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Lightweight contract testing.",
   "main": "index.js",
   "scripts": {
@@ -16,7 +16,7 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/Auroratide/hobbes.git"
-},
+  },
   "license": "MIT",
   "dependencies": {
     "axios": "^0.17.0",
