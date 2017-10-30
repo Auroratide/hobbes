@@ -105,4 +105,48 @@ describe('Object Matcher', () => {
       expect(new ObjectMatcher(obj).matches(model)).to.be.false;
     });
   });
+
+  describe('hobbes matchers', () => {
+    let obj;
+    let model;
+
+    beforeEach(() => {
+      obj = 'hello';
+
+      model = {
+        __hobbes_matcher__: {
+          value: 'world'
+        }
+      };
+    });
+
+    it('should return true when the type matches (string)', () => {
+      expect(new ObjectMatcher(obj).matches(model)).to.be.true;
+    });
+
+    it('should return true when the type matches (number)', () => {
+      obj = 5.67;
+      model.__hobbes_matcher__.value = -1.6;
+      expect(new ObjectMatcher(obj).matches(model)).to.be.true;
+    });
+
+    it('should return true when the type matches (boolean)', () => {
+      obj = true;
+      model.__hobbes_matcher__.value = false;
+      expect(new ObjectMatcher(obj).matches(model)).to.be.true;
+    });
+
+    it('should return true when the type matches (object)', () => {
+      obj = { field: 'value' };
+      model.__hobbes_matcher__.value = {};
+      expect(new ObjectMatcher(obj).matches(model)).to.be.true;
+    });
+
+    it('should return false when the type mismatches', () => {
+      obj = 'str';
+      model.__hobbes_matcher__.value = 4.3;
+      expect(new ObjectMatcher(obj).matches(model)).to.be.false;
+    });
+
+  });
 });
