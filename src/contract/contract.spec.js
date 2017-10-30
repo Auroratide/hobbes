@@ -37,7 +37,7 @@ describe('Contract', () => {
         consumer: 'ContractConsumer',
         provider: 'ContractProvider',
         port: 4567,
-        directory: path.resolve(__dirname, '..', 'contracts')
+        directory: path.resolve(__dirname, '../..', 'contracts')
       });
 
       contract.interaction({
@@ -72,7 +72,7 @@ describe('Contract', () => {
       return axios.get('http://localhost:4567/power').then(() => {
         return contract.finalize();
       }).then(() => {
-        const files = fs.readdirSync(path.resolve(__dirname, '..', 'contracts'));
+        const files = fs.readdirSync(path.resolve(__dirname, '..', '..', 'contracts'));
         expect(files).to.contain('ContractConsumer-ContractProvider.json');
       });
     });
