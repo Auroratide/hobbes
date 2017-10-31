@@ -7,7 +7,8 @@ app.use(bodyparser.json());
 app.get('/endpoint', (req, res) => {
   res.status(200).json({
     id: '12345',
-    title: 'Title'
+    title: 'Title',
+    tagline: 'This is a tagline'
   });
 });
 

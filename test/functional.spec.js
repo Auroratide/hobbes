@@ -17,7 +17,8 @@ describe('Hobbes Functional Test', () => {
   describe('GET /endpoint', () => {
     const EXPECTED_BODY = {
       id: '12345',
-      title: 'Title'
+      title: 'Title',
+      tagline: hobbes.sameTypeAs('tagline')
     };
 
     before(() => {
@@ -33,9 +34,10 @@ describe('Hobbes Functional Test', () => {
       });
     });
 
-    it('should get the title', () => {
-      return api.getTitle().then(title => {
-        expect(title).to.equal('Title');
+    it('should get the post details', () => {
+      return api.getPost().then(post => {
+        expect(post.title).to.equal('Title');
+        expect(post.tagline).to.equal('tagline');
       });
     });
   });

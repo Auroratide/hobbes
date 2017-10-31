@@ -5,6 +5,12 @@ const Verifier = require('./verifier');
 
 const contract = options => new Contract(options);
 
+const sameTypeAs = value => { return {
+  __hobbes_matcher__: {
+    value
+  }
+} };
+
 const verify = options => {
   return fs.readJson(options.contract).then(data => {
     const http = axios.create({
@@ -17,5 +23,6 @@ const verify = options => {
 
 module.exports = {
   contract,
-  verify
+  verify,
+  sameTypeAs
 };

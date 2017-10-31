@@ -11,6 +11,22 @@ const withoutInterceptors = interactions => Object.keys(interactions).reduce((i,
   return i;
 }, {});
 
+const convertContractObjectToResponse = obj => {
+  if(typeof obj !== 'object') {
+    return obj;
+  } else {
+    return Object.keys(obj).reduce((response, key) => {
+      if(obj[key].__hobbes_matcher__) {
+        response[key] = convertContractObjectToResponse(obj[key].__hobbes_matcher__.value);
+      } else {
+        response[key] = convertContractObjectToResponse(obj[key]);
+      }
+
+      return response;
+    }, {})
+  }
+};
+
 function Contract(options = {}) {
   this.consumer = options.consumer;
   this.provider = options.provider;
@@ -23,7 +39,7 @@ function Contract(options = {}) {
 Contract.prototype.interaction = function(options) {
   const interceptor = nock(`http://localhost:${this.port.toString()}`)
     .intercept(options.request.path, options.request.method)
-    .reply(options.response.status, options.response.body);
+    .reply(options.response.status, convertContractObjectToResponse(options.response.body));
 
   const interaction = {
     request: options.request,

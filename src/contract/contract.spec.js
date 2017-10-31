@@ -12,7 +12,7 @@ describe('Contract', () => {
       c.interaction({
         request: {
           method: 'GET',
-          path: '/power'
+          path: '/interaction/1'
         },
         response: {
           status: 200,
@@ -22,9 +22,51 @@ describe('Contract', () => {
         }
       });
 
-      return axios.get('http://localhost:4567/power').then(res => {
+      return axios.get('http://localhost:4567/interaction/1').then(res => {
         expect(res.status).to.equal(200);
         expect(res.data.super).to.equal('man');
+      });
+    });
+
+    it('should add an interaction using the hobbes matcher value in the response', () => {
+      const c = new Contract({ port: 4567 });
+      c.interaction({
+        request: {
+          method: 'GET',
+          path: '/interaction/2'
+        },
+        response: {
+          status: 200,
+          body: {
+            super: 'man',
+            matcher: {
+              __hobbes_matcher__: {
+                value: 42
+              }
+            },
+            objWithMatcher: {
+              matcher: {
+                __hobbes_matcher__: {
+                  value: 52
+                }
+              }
+            },
+            matcherWithMatcher: {
+              matcher: {
+                __hobbes_matcher__: {
+                  value: 62
+                }
+              }
+            }
+          }
+        }
+      });
+
+      return axios.get('http://localhost:4567/interaction/2').then(res => {
+        expect(res.status).to.equal(200);
+        expect(res.data.matcher).to.equal(42);
+        expect(res.data.objWithMatcher.matcher).to.equal(52);
+        expect(res.data.matcherWithMatcher.matcher).to.equal(62);
       });
     });
   });
