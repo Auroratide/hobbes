@@ -8,7 +8,8 @@ app.get('/endpoint', (req, res) => {
   res.status(200).json({
     id: '12345',
     title: 'Title',
-    tagline: 'This is a tagline'
+    tagline: 'This is a tagline',
+    likes: 79
   });
 });
 

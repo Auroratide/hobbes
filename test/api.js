@@ -6,7 +6,8 @@ const request = axios.create({
 const getPost = () => request.get('/endpoint').then(res => {
   return {
     title: res.data.title,
-    tagline: res.data.tagline
+    tagline: res.data.tagline,
+    likes: res.data.likes
   };
 });
 

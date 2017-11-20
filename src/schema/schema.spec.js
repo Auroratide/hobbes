@@ -62,6 +62,32 @@ describe('schema', () => {
     });
   });
 
+  describe('number', () => {
+    it('should return true when the value is a number', () => {
+      const schema = Schema.create({
+        __hobbes__: {
+          type: 'number'
+        }
+      });
+
+      expect(schema.matches(5.6)).to.be.true;
+      expect(schema.matches(-1.4)).to.be.true;
+    });
+
+    it('should return false when the value is not a number', () => {
+      const schema = Schema.create({
+        __hobbes__: {
+          type: 'number'
+        }
+      });
+
+      expect(schema.matches('hello')).to.be.false;
+      expect(schema.matches({})).to.be.false;
+      expect(schema.matches(true)).to.be.false;
+      expect(schema.matches([])).to.be.false;
+    });
+  });
+
   describe('objects', () => {
     it('should return true when all key-values match', () => {
       const schema = Schema.create({
@@ -85,6 +111,24 @@ describe('schema', () => {
         key1: 'wrong',
         key2: 56
       })).to.be.false;
+    });
+
+    it('should return true when all key-values match in nested structures', () => {
+      const schema = Schema.create({
+        key1: 1,
+        key2: {
+          key3: 3,
+          key4: 4
+        }
+      });
+
+      expect(schema.matches({
+        key1: 1,
+        key2: {
+          key3: 3,
+          key4: 4
+        }
+      })).to.be.true;
     });
   });
 });

@@ -18,7 +18,8 @@ describe('Hobbes Functional Test', () => {
     const EXPECTED_BODY = {
       id: '12345',
       title: 'Title',
-      tagline: hobbes.is.string('tagline')
+      tagline: hobbes.is.string('tagline'),
+      likes: hobbes.is.number(50)
     };
 
     before(() => {
@@ -38,6 +39,7 @@ describe('Hobbes Functional Test', () => {
       return api.getPost().then(post => {
         expect(post.title).to.equal('Title');
         expect(post.tagline).to.equal('tagline');
+        expect(post.likes).to.equal(50);
       });
     });
   });

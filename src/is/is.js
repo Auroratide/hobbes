@@ -1,9 +1,15 @@
-const string = (value) => { return {
+const createMatcher = (type) => (value) => { return {
   __hobbes__: {
-    value
+    value,
+    type
   }
 } };
 
+const string = createMatcher('string');
+
+const number = createMatcher('number');
+
 module.exports = {
-  string
+  string,
+  number
 };
