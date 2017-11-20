@@ -13,4 +13,10 @@ describe('is', () => {
       expect(is.number(5).__hobbes__).to.have.property('value', 5);
     });
   });
+
+  describe('boolean', () => {
+    it('returns a hobbes matcher with the given value', () => {
+      expect(is.boolean(true).__hobbes__).to.have.property('value', true);
+    });
+  });
 });

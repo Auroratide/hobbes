@@ -88,6 +88,32 @@ describe('schema', () => {
     });
   });
 
+  describe('boolean', () => {
+    it('should return true when the value is a boolean', () => {
+      const schema = Schema.create({
+        __hobbes__: {
+          type: 'boolean'
+        }
+      });
+
+      expect(schema.matches(true)).to.be.true;
+      expect(schema.matches(false)).to.be.true;
+    });
+
+    it('should return false when the value is not a boolean', () => {
+      const schema = Schema.create({
+        __hobbes__: {
+          type: 'boolean'
+        }
+      });
+
+      expect(schema.matches('hello')).to.be.false;
+      expect(schema.matches({})).to.be.false;
+      expect(schema.matches(5)).to.be.false;
+      expect(schema.matches([])).to.be.false;
+    });
+  });
+
   describe('objects', () => {
     it('should return true when all key-values match', () => {
       const schema = Schema.create({

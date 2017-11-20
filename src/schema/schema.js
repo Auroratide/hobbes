@@ -20,6 +20,9 @@ Schema.create = function(toMatch) {
       } case 'number': {
         validator = joi.number();
         break;
+      } case 'boolean': {
+        validator = joi.boolean();
+        break;
       } default: {
         validator = joi.any();
         break;

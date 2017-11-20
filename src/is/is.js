@@ -6,10 +6,11 @@ const createMatcher = (type) => (value) => { return {
 } };
 
 const string = createMatcher('string');
-
 const number = createMatcher('number');
+const boolean = createMatcher('boolean');
 
 module.exports = {
   string,
-  number
+  number,
+  boolean
 };

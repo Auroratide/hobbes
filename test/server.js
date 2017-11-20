@@ -9,7 +9,8 @@ app.get('/endpoint', (req, res) => {
     id: '12345',
     title: 'Title',
     tagline: 'This is a tagline',
-    likes: 79
+    likes: 79,
+    hidden: false
   });
 });
 

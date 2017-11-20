@@ -19,7 +19,8 @@ describe('Hobbes Functional Test', () => {
       id: '12345',
       title: 'Title',
       tagline: hobbes.is.string('tagline'),
-      likes: hobbes.is.number(50)
+      likes: hobbes.is.number(50),
+      hidden: hobbes.is.boolean(true)
     };
 
     before(() => {
@@ -40,6 +41,7 @@ describe('Hobbes Functional Test', () => {
         expect(post.title).to.equal('Title');
         expect(post.tagline).to.equal('tagline');
         expect(post.likes).to.equal(50);
+        expect(post.hidden).to.be.true;
       });
     });
   });
