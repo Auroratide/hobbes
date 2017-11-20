@@ -1,5 +1,6 @@
 const { expect } = require('chai');
 const Schema = require('./schema');
+const Types = require('../constants/types');
 
 describe('schema', () => {
   describe('exact matches', () => {
@@ -40,7 +41,7 @@ describe('schema', () => {
     it('should return true when the value is a string', () => {
       const schema = Schema.create({
         __hobbes__: {
-          type: 'string'
+          type: Types.STRING
         }
       });
 
@@ -51,7 +52,7 @@ describe('schema', () => {
     it('should return false when the value is not a string', () => {
       const schema = Schema.create({
         __hobbes__: {
-          type: 'string'
+          type: Types.STRING
         }
       });
 
@@ -66,7 +67,7 @@ describe('schema', () => {
     it('should return true when the value is a number', () => {
       const schema = Schema.create({
         __hobbes__: {
-          type: 'number'
+          type: Types.NUMBER
         }
       });
 
@@ -77,7 +78,7 @@ describe('schema', () => {
     it('should return false when the value is not a number', () => {
       const schema = Schema.create({
         __hobbes__: {
-          type: 'number'
+          type: Types.NUMBER
         }
       });
 
@@ -92,7 +93,7 @@ describe('schema', () => {
     it('should return true when the value is a boolean', () => {
       const schema = Schema.create({
         __hobbes__: {
-          type: 'boolean'
+          type: Types.BOOLEAN
         }
       });
 
@@ -103,7 +104,7 @@ describe('schema', () => {
     it('should return false when the value is not a boolean', () => {
       const schema = Schema.create({
         __hobbes__: {
-          type: 'boolean'
+          type: Types.BOOLEAN
         }
       });
 

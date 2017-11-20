@@ -1,3 +1,5 @@
+const Types = require('../constants/types');
+
 const createMatcher = (type) => (value) => { return {
   __hobbes__: {
     value,
@@ -5,9 +7,9 @@ const createMatcher = (type) => (value) => { return {
   }
 } };
 
-const string = createMatcher('string');
-const number = createMatcher('number');
-const boolean = createMatcher('boolean');
+const string = createMatcher(Types.STRING);
+const number = createMatcher(Types.NUMBER);
+const boolean = createMatcher(Types.BOOLEAN);
 
 module.exports = {
   string,

@@ -1,4 +1,5 @@
 const joi = require('joi');
+const Types = require('../constants/types');
 
 function Schema(validator) {
   this.validator = validator;
@@ -14,13 +15,13 @@ Schema.create = function(toMatch) {
 
   if(hobbesMatcher) {
     switch(hobbesMatcher.type) {
-      case 'string': {
+      case Types.STRING: {
         validator = joi.string();
         break;
-      } case 'number': {
+      } case Types.NUMBER: {
         validator = joi.number();
         break;
-      } case 'boolean': {
+      } case Types.BOOLEAN: {
         validator = joi.boolean();
         break;
       } default: {
