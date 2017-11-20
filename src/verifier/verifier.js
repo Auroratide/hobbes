@@ -1,7 +1,7 @@
 const path = require('path');
 const nock = require('nock');
 const fs = require('../utils/fs');
-const ObjectMatcher = require('../object-matcher');
+const Schema = require('../schema');
 
 function Verifier(http) {
   this.http = http;
@@ -10,7 +10,7 @@ function Verifier(http) {
 Verifier.prototype.verify = function(contract) {
   return Promise.all(Object.keys(contract.interactions).map(key => {
     const request = contract.interactions[key].request;
-    const response = contract.interactions[key].response;
+    const expectedResponse = contract.interactions[key].response;
 
     return this.http({
       method: request.method,
@@ -19,11 +19,13 @@ Verifier.prototype.verify = function(contract) {
     }).catch(err => {
       return err.response;
     }).then(res => {
-      if(res.status !== response.status) {
-        throw new Error(`Expected ${res.status} from provider to be ${response.status}`);
+      if(res.status !== expectedResponse.status) {
+        throw new Error(`Expected ${res.status} from provider to be ${expectedResponse.status}`);
       }
 
-      if(!(new ObjectMatcher(res.data).matches(response.body))) {
+      const schema = Schema.create(expectedResponse.body);
+
+      if(!schema.matches(res.data)) {
         throw new Error('Expected bodies to match');
       }
     });

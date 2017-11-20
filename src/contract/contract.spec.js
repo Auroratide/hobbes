@@ -40,20 +40,20 @@ describe('Contract', () => {
           body: {
             super: 'man',
             matcher: {
-              __hobbes_matcher__: {
+              __hobbes__: {
                 value: 42
               }
             },
             objWithMatcher: {
               matcher: {
-                __hobbes_matcher__: {
+                __hobbes__: {
                   value: 52
                 }
               }
             },
             matcherWithMatcher: {
               matcher: {
-                __hobbes_matcher__: {
+                __hobbes__: {
                   value: 62
                 }
               }

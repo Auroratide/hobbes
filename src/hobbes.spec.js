@@ -36,14 +36,9 @@ describe('hobbes', () => {
     });
   });
 
-  describe('sameTypeAs', () => {
-    const hobbes = require('./hobbes');
-    it('returns the appropriate hobbes matcher', () => {
-      expect(hobbes.sameTypeAs('hello')).to.deep.equal({
-        __hobbes_matcher__: {
-          value: 'hello'
-        }
-      });
+  describe('is', () => {
+    it('returns an is instance', () => {
+      expect(require('./hobbes').is).to.not.be.null;
     });
   });
 

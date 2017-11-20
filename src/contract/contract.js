@@ -16,8 +16,8 @@ const convertContractObjectToResponse = obj => {
     return obj;
   } else {
     return Object.keys(obj).reduce((response, key) => {
-      if(obj[key].__hobbes_matcher__) {
-        response[key] = convertContractObjectToResponse(obj[key].__hobbes_matcher__.value);
+      if(obj[key].__hobbes__) {
+        response[key] = convertContractObjectToResponse(obj[key].__hobbes__.value);
       } else {
         response[key] = convertContractObjectToResponse(obj[key]);
       }

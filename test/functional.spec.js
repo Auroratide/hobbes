@@ -18,7 +18,7 @@ describe('Hobbes Functional Test', () => {
     const EXPECTED_BODY = {
       id: '12345',
       title: 'Title',
-      tagline: hobbes.sameTypeAs('tagline')
+      tagline: hobbes.is.string('tagline')
     };
 
     before(() => {

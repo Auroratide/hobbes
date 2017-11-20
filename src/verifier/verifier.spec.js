@@ -2,14 +2,23 @@ const { expect } = require('chai');
 const axios = require('axios');
 const nock = require('nock');
 const td = require('testdouble');
+const Verifier = require('./verifier');
+const Schema = require('../schema');
 
 describe('Verifier', () => {
   const BASE_URL = 'http://localhost:4567';
+  let createSchema;
+  let schema;
+  let verifier;
+  const request = axios.create({
+    baseURL: BASE_URL
+  });
 
   const createContract = () => { return { interactions: {} }};
 
   const createGet = (path, responseBody) => {
-    td.when(ObjectMatcher.prototype.matches(responseBody)).thenReturn(true);
+    td.when(createSchema(responseBody)).thenReturn(schema);
+    td.when(schema.matches(responseBody)).thenReturn(true);
     const interceptor = nock(BASE_URL)
       .get(path)
       .reply(200, responseBody);
@@ -27,16 +36,9 @@ describe('Verifier', () => {
     };
   };
 
-  let ObjectMatcher;
-  let Verifier;
-  let verifier;
-  const request = axios.create({
-    baseURL: BASE_URL
-  });
-
   beforeEach(() => {
-    ObjectMatcher = td.replace('../object-matcher');
-    Verifier = require('./verifier');
+    schema = { matches: td.function() };
+    createSchema = td.replace(Schema, 'create');
     verifier = new Verifier(request);
   });
 
@@ -86,7 +88,7 @@ describe('Verifier', () => {
     it('should throw when the response body does not match', () => {
       const contract = createContract();
       contract.interactions['GET /endpoint'] = createGet('/endpoint', { field: 'value' });
-      td.when(ObjectMatcher.prototype.matches({ field: 'value' })).thenReturn(false);
+      td.when(schema.matches({ field: 'value' })).thenReturn(false);
 
       return new Promise((resolve, reject) => {
         verifier.verify(contract).then(() => {
