@@ -31,8 +31,11 @@ Schema.create = function(toMatch) {
         return val;
       }, {})).unknown();
       break;
+    } case Types.ARRAY: {
+      validator = joi.array().items(Schema.create(toMatch.of).validator);
+      break;
     } default: {
-      validator = joi.any();
+      validator = joi.any().forbidden();
       break;
     }
   }

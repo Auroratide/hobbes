@@ -21,10 +21,10 @@ describe('Hobbes Functional Test', () => {
       tagline: hobbes.is.string('tagline'),
       likes: hobbes.is.number(50),
       hidden: hobbes.is.boolean(true),
-      // comments: hobbes.is.array({
-        // id: hobbes.is.string('1'),
-        // text: hobbes.is.string('Hello world')
-      // })
+      comments: hobbes.is.arrayOf(hobbes.is.object({
+        id: hobbes.is.string('1'),
+        text: hobbes.is.string('Hello world')
+      }))
     });
 
     before(() => {
@@ -46,10 +46,10 @@ describe('Hobbes Functional Test', () => {
         expect(post.tagline).to.equal('tagline');
         expect(post.likes).to.equal(50);
         expect(post.hidden).to.be.true;
-        // expect(post.comments[0]).to.deep.equal({
-          // id: '1',
-          // text: 'Hello world'
-        // });
+        expect(post.comments[0]).to.deep.equal({
+          id: '1',
+          text: 'Hello world'
+        });
       });
     });
   });

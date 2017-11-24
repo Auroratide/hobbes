@@ -219,4 +219,28 @@ describe('schema', () => {
       })).to.be.true;
     });
   });
+
+  describe('arrays', () => {
+    it('should return true when each value in the array conforms to the schema', () => {
+      const schema = Schema.create({
+        type: Types.ARRAY,
+        of: {
+          type: Types.STRING
+        }
+      });
+
+      expect(schema.matches(['hello', 'world', '!'])).to.be.true;
+    });
+
+    it('should return false when any value in the array fails to conform to the schema', () => {
+      const schema = Schema.create({
+        type: Types.ARRAY,
+        of: {
+          type: Types.STRING
+        }
+      });
+
+      expect(schema.matches(['hello', 5, '!'])).to.be.false;
+    });
+  });
 });
