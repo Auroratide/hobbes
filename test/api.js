@@ -8,7 +8,8 @@ const getPost = () => request.get('/endpoint').then(res => {
     title: res.data.title,
     tagline: res.data.tagline,
     likes: res.data.likes,
-    hidden: res.data.hidden
+    hidden: res.data.hidden,
+    comments: res.data.comments
   };
 });
 

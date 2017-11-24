@@ -10,7 +10,14 @@ app.get('/endpoint', (req, res) => {
     title: 'Title',
     tagline: 'This is a tagline',
     likes: 79,
-    hidden: false
+    hidden: false,
+    comments: [ {
+      id: '1',
+      text: 'This is a comment.'
+    }, {
+      id: '2',
+      text: 'I really disliked that post'
+    } ]
   });
 });
 
