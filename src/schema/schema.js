@@ -11,31 +11,30 @@ Schema.prototype.matches = function(value) {
 
 Schema.create = function(toMatch) {
   let validator;
-  const hobbesMatcher = toMatch.__hobbes__;
 
-  if(hobbesMatcher) {
-    switch(hobbesMatcher.type) {
-      case Types.STRING: {
-        validator = joi.string();
-        break;
-      } case Types.NUMBER: {
-        validator = joi.number();
-        break;
-      } case Types.BOOLEAN: {
-        validator = joi.boolean();
-        break;
-      } default: {
-        validator = joi.any();
-        break;
-      }
+  switch(toMatch.type) {
+    case Types.EXACT: {
+      validator = joi.any().valid(toMatch.value);
+      break;
+    } case Types.STRING: {
+      validator = joi.string();
+      break;
+    } case Types.NUMBER: {
+      validator = joi.number();
+      break;
+    } case Types.BOOLEAN: {
+      validator = joi.boolean();
+      break;
+    } case Types.OBJECT: {
+      validator = joi.object().keys(Object.keys(toMatch.fields).reduce((val, key) => {
+        val[key] = Schema.create(toMatch.fields[key]).validator;
+        return val;
+      }, {})).unknown();
+      break;
+    } default: {
+      validator = joi.any();
+      break;
     }
-  } else if(typeof toMatch === 'object') {
-    validator = joi.object().keys(Object.keys(toMatch).reduce((currentObj, key) => {
-      currentObj[key] = Schema.create(toMatch[key]).validator;
-      return currentObj;
-    }, {}))
-  } else {
-    validator = joi.any().valid(toMatch);
   }
 
   return new Schema(validator);

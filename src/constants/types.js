@@ -1,6 +1,8 @@
 module.exports = {
+  EXACT: 'exact',
   STRING: 'string',
   NUMBER: 'number',
   BOOLEAN: 'boolean',
-  ARRAY: 'array'
+  ARRAY: 'array',
+  OBJECT: 'object'
 };

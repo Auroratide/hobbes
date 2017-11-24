@@ -1,39 +1,28 @@
 const Types = require('../constants/types');
 
 const createBasicMatcher = (type) => (value) => { return {
-  __hobbes__: {
-    value,
-    type
-  }
+  value,
+  type
 } };
 
-const string = createBasicMatcher(Types.STRING);
-const number = createBasicMatcher(Types.NUMBER);
-const boolean = createBasicMatcher(Types.BOOLEAN);
+const is = createBasicMatcher(Types.EXACT);
+is.string = createBasicMatcher(Types.STRING);
+is.number = createBasicMatcher(Types.NUMBER);
+is.boolean = createBasicMatcher(Types.BOOLEAN);
 
-const valueFor = (arrayElement) => {
-  if(arrayElement.__hobbes__) {
-    return arrayElement.__hobbes__.value;
-  } else if(typeof arrayElement === 'object') {
-    return Object.keys(arrayElement).reduce((curObj, key) => {
-      curObj[key] = valueFor(arrayElement[key]);
-      return curObj;
-    }, {});
-  } else {
-    return arrayElement;
-  }
-};
-
-const arrayOf = (element) => { return {
-  __hobbes__: {
-    value: [ valueFor(element) ],
-    type: Types.ARRAY
-  }
+is.object = (fields) => { return {
+  type: Types.OBJECT,
+  fields,
+  value: Object.keys(fields).reduce((val, key) => {
+    val[key] = fields[key].value;
+    return val;
+    }, {})
 } };
 
-module.exports = {
-  string,
-  number,
-  boolean,
-  arrayOf
-};
+is.arrayOf = (of) => { return {
+  type: Types.ARRAY,
+  of,
+  value: [ of.value ]
+} };
+
+module.exports = is;
