@@ -6,7 +6,7 @@ function Schema(validator) {
 }
 
 Schema.prototype.matches = function(value) {
-  return joi.validate(value, this.validator).error === null;
+  return joi.validate(value, this.validator, { convert: false }).error === null;
 };
 
 Schema.create = function(toMatch) {

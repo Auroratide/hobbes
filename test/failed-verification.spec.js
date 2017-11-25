@@ -4,11 +4,11 @@ const hobbes = require('..');
 const api = require('./api');
 const server = require('./server');
 
-describe('Hobbes Functional Test', () => {
+describe('Failed Verification Test', () => {
   const CONTRACT_FILE_DIR = path.resolve(__dirname, '..', 'contracts');
 
   const contract = hobbes.contract({
-    consumer: 'FunctionalConsumer',
+    consumer: 'FunctionalConsumerFailure',
     provider: 'FunctionalProvider',
     port: 4567,
     directory: CONTRACT_FILE_DIR
@@ -22,7 +22,7 @@ describe('Hobbes Functional Test', () => {
       likes: hobbes.is.number(50),
       hidden: hobbes.is.boolean(true),
       comments: hobbes.is.arrayOf(hobbes.is.object({
-        id: hobbes.is.string('1'),
+        id: hobbes.is.number(1),
         text: hobbes.is.string('Hello world')
       }))
     });
@@ -47,40 +47,9 @@ describe('Hobbes Functional Test', () => {
         expect(post.likes).to.equal(50);
         expect(post.hidden).to.be.true;
         expect(post.comments[0]).to.deep.equal({
-          id: '1',
+          id: 1,
           text: 'Hello world'
         });
-      });
-    });
-  });
-
-  describe('POST /endpoint', () => {
-    const REQUEST = {
-      title: 'Cool Title'
-    };
-
-    const EXPECTED_BODY = hobbes.is.object({
-      id: hobbes.is('12346'),
-      title: hobbes.is('Cool Title')
-    });
-
-    before(() => {
-      contract.interaction({
-        request: {
-          method: 'POST',
-          path: '/endpoint',
-          body: REQUEST
-        },
-        response: {
-          status: 201,
-          body: EXPECTED_BODY
-        }
-      });
-    });
-
-    it('should post the title', () => {
-      return api.postTitle('Cool Tilte').then(title => {
-        expect(title).to.equal('Cool Title');
       });
     });
   });
@@ -91,13 +60,14 @@ describe('Hobbes Functional Test', () => {
       serverInstance = server.listen(7654);
       return hobbes.verify({
         baseURL: 'http://localhost:7654',
-        contract: path.join(CONTRACT_FILE_DIR, 'FunctionalConsumer-FunctionalProvider.json')
+        contract: path.join(CONTRACT_FILE_DIR, 'FunctionalConsumerFailure-FunctionalProvider.json')
       });
     }).then(() => {
       serverInstance.close();
-    }).catch(err => {
+      throw new Error('Passed verification, but should have failed!');
+    }, err => {
       serverInstance.close();
-      throw err;
+      console.log(err);
     });;
   });
 });

@@ -41,6 +41,15 @@ describe('schema', () => {
       expect(schema.matches(0)).to.be.false;
     });
 
+    it('should return false when the number value is a string', () => {
+      const schema = Schema.create({
+        type: Types.EXACT,
+        value: 5.6
+      });
+
+      expect(schema.matches('5.6')).to.be.false;
+    });
+
     it('should return true when the boolean value matches exactly', () => {
       const schema = Schema.create({
         type: Types.EXACT,
