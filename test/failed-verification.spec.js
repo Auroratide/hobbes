@@ -7,56 +7,21 @@ const server = require('./server');
 describe('Failed Verification Test', () => {
   const CONTRACT_FILE_DIR = path.resolve(__dirname, '..', 'contracts');
 
-  const contract = hobbes.contract({
-    consumer: 'FunctionalConsumerFailure',
-    provider: 'FunctionalProvider',
-    port: 4567,
-    directory: CONTRACT_FILE_DIR
-  });
-
-  describe('GET /endpoint', () => {
-    const EXPECTED_BODY = hobbes.is.object({
-      id: hobbes.is('12345'),
-      title: hobbes.is('Title'),
-      tagline: hobbes.is.string('tagline'),
-      likes: hobbes.is.number(50),
-      hidden: hobbes.is.boolean(true),
-      comments: hobbes.is.arrayOf(hobbes.is.object({
-        id: hobbes.is.number(1),
-        text: hobbes.is.string('Hello world')
-      }))
+  let contract;
+  const newContract = () => {
+    contract = hobbes.contract({
+      consumer: 'FunctionalConsumerFailure',
+      provider: 'FunctionalProvider',
+      port: 4567,
+      directory: CONTRACT_FILE_DIR
     });
+  };
 
-    before(() => {
-      contract.interaction({
-        request: {
-          method: 'GET',
-          path: '/endpoint'
-        },
-        response: {
-          status: 200,
-          body: EXPECTED_BODY
-        }
-      });
-    });
-
-    it('should get the post details', () => {
-      return api.getPost().then(post => {
-        expect(post.title).to.equal('Title');
-        expect(post.tagline).to.equal('tagline');
-        expect(post.likes).to.equal(50);
-        expect(post.hidden).to.be.true;
-        expect(post.comments[0]).to.deep.equal({
-          id: 1,
-          text: 'Hello world'
-        });
-      });
-    });
-  });
-
-  after(() => {
+  const test = (name, f) => it(name, () => {
     let serverInstance;
-    return contract.finalize().then(() => {
+    return f().then(() => {
+      return contract.finalize();
+    }).then(() => {
       serverInstance = server.listen(7654);
       return hobbes.verify({
         baseURL: 'http://localhost:7654',
@@ -68,6 +33,71 @@ describe('Failed Verification Test', () => {
     }, err => {
       serverInstance.close();
       console.log(err);
-    });;
+    });
+  });
+
+  describe('GET', () => {
+    const createInteraction = expectedBody => contract.interaction({
+      request: {
+        method: 'GET',
+        path: '/endpoint'
+      },
+      response: {
+        status: 200,
+        body: expectedBody
+      }
+    });
+
+    describe('Expecting a number', () => {
+      before(() => {
+        newContract();
+        createInteraction(hobbes.is.object({
+          id: hobbes.is.number(12345)
+        }));
+      });
+  
+      test('should fail when actual is not a number', () => {
+        return api.getPost();
+      });
+    });
+
+    describe('Expecting a boolean', () => {
+      before(() => {
+        newContract();
+        createInteraction(hobbes.is.object({
+          id: hobbes.is.boolean(true)
+        }));
+      });
+  
+      test('should fail when actual is not a boolean', () => {
+        return api.getPost();
+      });
+    });
+
+    describe('Expecting a string', () => {
+      before(() => {
+        newContract();
+        createInteraction(hobbes.is.object({
+          likes: hobbes.is.string('12345')
+        }));
+      });
+  
+      test('should fail when actual is not a string', () => {
+        return api.getPost();
+      });
+    });
+
+    describe.skip('Expecting a missing key', () => {
+      before(() => {
+        newContract();
+        createInteraction(hobbes.is.object({
+          notakey: hobbes.is.string('')
+        }));
+      });
+  
+      test('should fail when actual does not contain the key', () => {
+        return api.getPost();
+      });
+    });
   });
 });
