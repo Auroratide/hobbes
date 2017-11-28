@@ -87,7 +87,7 @@ describe('Failed Verification Test', () => {
       });
     });
 
-    describe.skip('Expecting a missing key', () => {
+    describe('Expecting a missing key', () => {
       before(() => {
         newContract();
         createInteraction(hobbes.is.object({

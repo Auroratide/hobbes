@@ -227,6 +227,22 @@ describe('schema', () => {
         key2: 56
       })).to.be.true;
     });
+
+    it.only('should fail when expecting a key that is not present', () => {
+      const schema = Schema.create({
+        type: Types.OBJECT,
+        fields: {
+          key1: {
+            type: Types.EXACT,
+            value: 'value'
+          }
+        }
+      });
+
+      expect(schema.matches({
+        key2: 56
+      })).to.be.false;
+    });
   });
 
   describe('arrays', () => {

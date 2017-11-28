@@ -14,16 +14,16 @@ Schema.create = function(toMatch) {
 
   switch(toMatch.type) {
     case Types.EXACT: {
-      validator = joi.any().valid(toMatch.value);
+      validator = joi.any().valid(toMatch.value).required();
       break;
     } case Types.STRING: {
-      validator = joi.string();
+      validator = joi.string().required();
       break;
     } case Types.NUMBER: {
-      validator = joi.number();
+      validator = joi.number().required();
       break;
     } case Types.BOOLEAN: {
-      validator = joi.boolean();
+      validator = joi.boolean().required();
       break;
     } case Types.OBJECT: {
       validator = joi.object().keys(Object.keys(toMatch.fields).reduce((val, key) => {
