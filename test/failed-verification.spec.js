@@ -48,6 +48,19 @@ describe('Failed Verification Test', () => {
       }
     });
 
+    describe('Expecting an exact value', () => {
+      before(() => {
+        newContract();
+        createInteraction(hobbes.is.object({
+          id: hobbes.is('incorrect!')
+        }));
+      });
+  
+      test('should fail when actual is not the correct value', () => {
+        return api.getPost();
+      });
+    });
+
     describe('Expecting a number', () => {
       before(() => {
         newContract();
@@ -87,6 +100,19 @@ describe('Failed Verification Test', () => {
       });
     });
 
+    describe('Expecting an object', () => {
+      before(() => {
+        newContract();
+        createInteraction(hobbes.is.object({
+          id: hobbes.is.object({})
+        }));
+      });
+  
+      test('should fail when actual is not an object', () => {
+        return api.getPost();
+      });
+    });
+
     describe('Expecting a missing key', () => {
       before(() => {
         newContract();
@@ -96,6 +122,32 @@ describe('Failed Verification Test', () => {
       });
   
       test('should fail when actual does not contain the key', () => {
+        return api.getPost();
+      });
+    });
+
+    describe('Expecting a key to be the correct type', () => {
+      before(() => {
+        newContract();
+        createInteraction(hobbes.is.object({
+          id: hobbes.is.number(0)
+        }));
+      });
+  
+      test('should fail when actual does not contain key of the correct type', () => {
+        return api.getPost();
+      });
+    });
+
+    describe('Expecting items in array to be correct', () => {
+      before(() => {
+        newContract();
+        createInteraction(hobbes.is.object({
+          comments: hobbes.is.arrayOf(hobbes.is.string(''))
+        }));
+      });
+  
+      test('should fail when at least one item in array does not match schema', () => {
         return api.getPost();
       });
     });
