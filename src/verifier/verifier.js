@@ -26,7 +26,7 @@ Verifier.prototype.verify = function(contract) {
       const schema = Schema.create(expectedResponse.body);
 
       if(!schema.matches(res.data)) {
-        throw new Error('Expected bodies to match');
+        throw schema.errors();
       }
     });
   }));

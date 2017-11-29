@@ -3,10 +3,16 @@ const Types = require('../constants/types');
 
 function Schema(validator) {
   this.validator = validator;
+  this._errors = null;
 }
 
 Schema.prototype.matches = function(value) {
-  return joi.validate(value, this.validator, { convert: false }).error === null;
+  this._errors = joi.validate(value, this.validator, { convert: false }).error;
+  return this._errors === null;
+};
+
+Schema.prototype.errors = function() {
+  return this._errors;
 };
 
 Schema.create = function(toMatch) {

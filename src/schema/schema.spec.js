@@ -228,7 +228,7 @@ describe('schema', () => {
       })).to.be.true;
     });
 
-    it.only('should fail when expecting a key that is not present', () => {
+    it('should fail when expecting a key that is not present', () => {
       const schema = Schema.create({
         type: Types.OBJECT,
         fields: {
@@ -266,6 +266,19 @@ describe('schema', () => {
       });
 
       expect(schema.matches(['hello', 5, '!'])).to.be.false;
+    });
+  });
+
+  describe('errors', () => {
+    it('should record errors when verification fails', () => {
+      const schema = Schema.create({
+        type: Types.EXACT,
+        value: 'hello'
+      });
+
+      schema.matches('notamatch')
+
+      expect(schema.errors()).is.not.null;
     });
   });
 });
