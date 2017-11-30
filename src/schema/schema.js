@@ -7,7 +7,11 @@ function Schema(validator) {
 }
 
 Schema.prototype.matches = function(value) {
-  this._errors = joi.validate(value, this.validator, { convert: false }).error;
+  this._errors = joi.validate(value, this.validator, {
+    convert: false,
+    abortEarly: false
+  }).error;
+
   return this._errors === null;
 };
 

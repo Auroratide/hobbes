@@ -32,7 +32,6 @@ describe('Failed Verification Test', () => {
       throw new Error('Passed verification, but should have failed!');
     }, err => {
       serverInstance.close();
-      console.log(err);
     });
   });
 

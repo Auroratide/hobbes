@@ -2,6 +2,7 @@ const path = require('path');
 const nock = require('nock');
 const fs = require('../utils/fs');
 const Schema = require('../schema');
+const { VerificationError } = require('../errors');
 
 function Verifier(http) {
   this.http = http;
@@ -26,7 +27,7 @@ Verifier.prototype.verify = function(contract) {
       const schema = Schema.create(expectedResponse.body);
 
       if(!schema.matches(res.data)) {
-        throw schema.errors();
+        throw new VerificationError(schema.errors().details, schema.errors()._object);
       }
     });
   }));
