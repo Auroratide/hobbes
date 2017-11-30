@@ -23,7 +23,7 @@ function Contract(options = {}) {
 Contract.prototype.interaction = function(options) {
   const interceptor = nock(`http://localhost:${this.port.toString()}`)
     .intercept(options.request.path, options.request.method)
-    .reply(options.response.status, options.response.body.value);
+    .reply(options.response.status, options.response.body ? options.response.body.value : undefined);
 
   const interaction = {
     request: options.request,

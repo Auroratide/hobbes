@@ -13,12 +13,12 @@ const createErrorMessage = (errors, originalObject) => {
   return message;
 };
 
-function VerificationError(errors, originalObject) {
-  this.name = 'VerificationError';
+function ObjectVerificationError(errors, originalObject) {
+  this.name = 'ObjectVerificationError';
   this.errors = errors;
   this.object = originalObject;
 
   this.message = createErrorMessage(errors, originalObject);
 }
 
-module.exports = VerificationError;
+module.exports = ObjectVerificationError;

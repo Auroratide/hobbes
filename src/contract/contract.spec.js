@@ -36,6 +36,24 @@ describe('Contract', () => {
         expect(res.data.super).to.equal('man');
       });
     });
+
+    it('should add an interaction when a body is not defined', () => {
+      const c = new Contract({ port: 4567 });
+      c.interaction({
+        request: {
+          method: 'GET',
+          path: '/interaction/1'
+        },
+        response: {
+          status: 204
+        }
+      });
+
+      return axios.get('http://localhost:4567/interaction/1').then(res => {
+        expect(res.status).to.equal(204);
+        expect(res.data).to.have.length(0);
+      });
+    });
   });
 
   describe('finalize', () => {

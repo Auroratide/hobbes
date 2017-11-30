@@ -150,5 +150,24 @@ describe('Failed Verification Test', () => {
         return api.getPost();
       });
     });
+
+    describe('Expecting status to be correct', () => {
+      before(() => {
+        newContract();
+        contract.interaction({
+          request: {
+            method: 'GET',
+            path: '/endpoint'
+          },
+          response: {
+            status: 204
+          }
+        })
+      });
+  
+      test('should fail when status does not match expected status', () => {
+        return api.getPost();
+      });
+    });
   });
 });

@@ -2,7 +2,7 @@ const path = require('path');
 const nock = require('nock');
 const fs = require('../utils/fs');
 const Schema = require('../schema');
-const { VerificationError } = require('../errors');
+const { StatusVerificationError, ObjectVerificationError } = require('../errors');
 
 function Verifier(http) {
   this.http = http;
@@ -21,13 +21,13 @@ Verifier.prototype.verify = function(contract) {
       return err.response;
     }).then(res => {
       if(res.status !== expectedResponse.status) {
-        throw new Error(`Expected ${res.status} from provider to be ${expectedResponse.status}`);
+        throw new StatusVerificationError(expectedResponse.status, res.status, res.data);
       }
 
       const schema = Schema.create(expectedResponse.body);
 
       if(!schema.matches(res.data)) {
-        throw new VerificationError(schema.errors().details, schema.errors()._object);
+        throw new ObjectVerificationError(schema.errors().details, schema.errors()._object);
       }
     });
   }));
