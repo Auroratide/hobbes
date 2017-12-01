@@ -2,7 +2,11 @@ const path = require('path');
 const nock = require('nock');
 const fs = require('../utils/fs');
 const Schema = require('../schema');
-const { StatusVerificationError, ObjectVerificationError } = require('../errors');
+const {
+  StatusVerificationError,
+  ObjectVerificationError,
+  ConnectionRefusedError
+} = require('../errors');
 
 function Verifier(http) {
   this.http = http;
@@ -18,7 +22,10 @@ Verifier.prototype.verify = function(contract) {
       url: request.path,
       data: request.body
     }).catch(err => {
-      return err.response;
+      if(err.code === 'ECONNREFUSED')
+        throw new ConnectionRefusedError(err.config.url);
+      else
+        return err.response;
     }).then(res => {
       if(res.status !== expectedResponse.status) {
         throw new StatusVerificationError(expectedResponse.status, res.status, res.data);

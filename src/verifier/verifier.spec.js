@@ -19,6 +19,10 @@ describe('Verifier', () => {
   const createGet = (path, responseBody) => {
     td.when(createSchema(responseBody)).thenReturn(schema);
     td.when(schema.matches(responseBody)).thenReturn(true);
+    td.when(schema.errors()).thenReturn({
+      details: [],
+      _object: {}
+    });
     const interceptor = nock(BASE_URL)
       .get(path)
       .reply(200, responseBody);
@@ -37,7 +41,7 @@ describe('Verifier', () => {
   };
 
   beforeEach(() => {
-    schema = { matches: td.function() };
+    schema = { matches: td.function(), errors: td.function() };
     createSchema = td.replace(Schema, 'create');
     verifier = new Verifier(request);
   });
@@ -80,8 +84,11 @@ describe('Verifier', () => {
         verifier.verify(contract).then(() => {
           reject('Promise was resolved but should have been rejected');
         }).catch(err => {
+          expect(err.name).to.equal('StatusVerificationError');
           resolve();
-        });
+        }).catch(err => {
+          reject(err);
+        });;
       });
     });
 
@@ -94,7 +101,35 @@ describe('Verifier', () => {
         verifier.verify(contract).then(() => {
           reject('Promise was resolved but should have been rejected');
         }).catch(err => {
+          expect(err.name).to.equal('ObjectVerificationError');
           resolve();
+        }).catch(err => {
+          reject(err);
+        });
+      });
+    });
+
+    it('should throw when the connection to server failed', () => {
+      nock.cleanAll();
+      const contract = createContract();
+      contract.interactions['GET /endpoint'] = {
+        request: {
+          method: 'GET',
+          path: '/endpoint'
+        },
+        response: {
+          status: 200
+        }
+      };
+
+      return new Promise((resolve, reject) => {
+        verifier.verify(contract).then(() => {
+          reject('Promise was resolved but should have been rejected');
+        }).catch(err => {
+          expect(err.name).to.equal('ConnectionRefusedError');
+          resolve();
+        }).catch(err => {
+          reject(err);
         });
       });
     });
