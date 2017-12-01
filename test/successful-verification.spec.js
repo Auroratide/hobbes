@@ -55,9 +55,9 @@ describe('Successful Verification Test', () => {
   });
 
   describe('POST /endpoint', () => {
-    const REQUEST = {
-      title: 'Cool Title'
-    };
+    const REQUEST = hobbes.is.object({
+      title: hobbes.is.string('Cool Title')
+    });
 
     const EXPECTED_BODY = hobbes.is.object({
       id: hobbes.is('12346'),
