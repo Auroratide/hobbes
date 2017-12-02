@@ -1,8 +1,6 @@
 const path = require('path');
-const { expect, assert } = require('chai');
 const hobbes = require('..');
 const api = require('./api');
-const server = require('./server');
 
 describe('Failed Connection Test', () => {
   const CONTRACT_FILE_DIR = path.resolve(__dirname, '..', 'contracts');
@@ -38,6 +36,6 @@ describe('Failed Connection Test', () => {
       });
     }).then(() => {
       throw new Error('Passed verification, but should have failed!');
-    }, err => {});
+    }, () => {});
   });
 });

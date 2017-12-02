@@ -1,4 +1,4 @@
-function ConnectionRefusedError(url, originalRequest) {
+module.exports = function ConnectionRefusedError(url, originalRequest) {
   this.name = 'ConnectionRefusedError';
 
   let message = `CONNECTION ERROR: ${originalRequest.method} ${originalRequest.url}\n`;
@@ -6,5 +6,3 @@ function ConnectionRefusedError(url, originalRequest) {
 
   this.message = message;
 };
-
-module.exports = ConnectionRefusedError;

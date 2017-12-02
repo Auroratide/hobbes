@@ -21,12 +21,10 @@ const createErrorMessage = (errors, originalObject, originalRequest) => {
   return message;
 };
 
-function ObjectVerificationError(errors, originalObject, originalRequest) {
+module.exports = function ObjectVerificationError(errors, originalObject, originalRequest) {
   this.name = 'ObjectVerificationError';
   this.errors = errors;
   this.object = originalObject;
 
   this.message = createErrorMessage(errors, originalObject, originalRequest);
-}
-
-module.exports = ObjectVerificationError;
+};

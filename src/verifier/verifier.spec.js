@@ -14,7 +14,9 @@ describe('Verifier', () => {
     baseURL: BASE_URL
   });
 
-  const createContract = () => { return { interactions: {} }};
+  const createContract = () => { 
+    return { interactions: {} };
+  };
 
   const createGet = (path, responseBody) => {
     td.when(createSchema(responseBody)).thenReturn(schema);
@@ -75,7 +77,7 @@ describe('Verifier', () => {
     it('should throw when the status does not match', () => {
       const contract = createContract();
 
-      const interaction = nock(BASE_URL)
+      nock(BASE_URL)
         .get('/bad-endpoint')
         .reply(404, {});
       contract.interactions['GET /bad-endpoint'] = createGet('/bad-endpoint', { field: 'value' });
@@ -88,7 +90,7 @@ describe('Verifier', () => {
           resolve();
         }).catch(err => {
           reject(err);
-        });;
+        });
       });
     });
 

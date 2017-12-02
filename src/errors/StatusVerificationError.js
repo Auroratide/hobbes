@@ -1,4 +1,4 @@
-function StatusVerificationError(expectedStatus, actualStatus, responseBody, originalRequest) {
+module.exports = function StatusVerificationError(expectedStatus, actualStatus, responseBody, originalRequest) {
   this.name = 'StatusVerificationError';
 
   let message = `VERIFICATION ERROR: ${originalRequest.method} ${originalRequest.url}\n`;
@@ -16,5 +16,3 @@ function StatusVerificationError(expectedStatus, actualStatus, responseBody, ori
 
   this.message = message;
 };
-
-module.exports = StatusVerificationError;

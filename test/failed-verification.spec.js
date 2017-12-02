@@ -1,5 +1,5 @@
 const path = require('path');
-const { expect, assert } = require('chai');
+const { expect } = require('chai');
 const hobbes = require('..');
 const api = require('./api');
 const server = require('./server');
@@ -30,7 +30,7 @@ describe('Failed Verification Test', () => {
     }).then(() => {
       serverInstance.close();
       throw new Error('Passed verification, but should have failed!');
-    }, err => {
+    }, () => {
       serverInstance.close();
     });
   });
@@ -162,7 +162,7 @@ describe('Failed Verification Test', () => {
           response: {
             status: 204
           }
-        })
+        });
       });
   
       test('should fail when status does not match expected status', () => {
@@ -196,7 +196,7 @@ describe('Failed Verification Test', () => {
         expect(title).to.equal('title');
       }).then(() => {
         throw new Error('Passed verification, but should have failed!');
-      }, err => {});
+      }, () => {});
     });
   });
 });

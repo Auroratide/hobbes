@@ -1,10 +1,10 @@
 const joi = require('joi');
 const Types = require('../constants/types');
 
-function Schema(validator) {
+const Schema = function(validator) {
   this.validator = validator;
   this._errors = null;
-}
+};
 
 Schema.prototype.matches = function(value) {
   this._errors = joi.validate(value, this.validator, {

@@ -11,14 +11,14 @@ const withoutInterceptors = interactions => Object.keys(interactions).reduce((i,
   return i;
 }, {});
 
-function Contract(options = {}) {
+const Contract = function(options = {}) {
   this.consumer = options.consumer;
   this.provider = options.provider;
   this.port = options.port;
   this.directory = options.directory;
 
   this.interactions = {};
-}
+};
 
 Contract.prototype.interaction = function(options) {
   const interceptor = nock(`http://localhost:${this.port.toString()}`)
@@ -28,7 +28,7 @@ Contract.prototype.interaction = function(options) {
   const interaction = {
     request: options.request,
     response: options.response,
-    interceptor: interceptor
+    interceptor
   };
   
   this.interactions[`${options.request.method} ${options.request.path}`] = interaction;

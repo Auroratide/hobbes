@@ -276,7 +276,7 @@ describe('schema', () => {
         value: 'hello'
       });
 
-      schema.matches('notamatch')
+      schema.matches('notamatch');
 
       expect(schema.errors()).is.not.null;
     });

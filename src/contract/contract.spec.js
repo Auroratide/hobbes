@@ -121,16 +121,9 @@ describe('Contract', () => {
       });
     });
 
-    const createContract = () => new Contract({
-      consumer: 'ContractConsumer',
-      provider: 'ContractProvider',
-      port: 4567,
-      directory: path.resolve(__dirname, '..', 'contracts')
-    });
-
     it('verifies interceptors', () => {
       expect(() => contract.finalize()).to.throw();
-      return axios.get('http://localhost:4567/power').then(res => {
+      return axios.get('http://localhost:4567/power').then(() => {
         expect(() => contract.finalize()).to.not.throw();
       });
     });

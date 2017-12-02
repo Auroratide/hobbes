@@ -1,5 +1,5 @@
 const path = require('path');
-const { expect, assert } = require('chai');
+const { expect } = require('chai');
 const hobbes = require('..');
 const api = require('./api');
 const server = require('./server');
@@ -98,6 +98,6 @@ describe('Successful Verification Test', () => {
     }).catch(err => {
       serverInstance.close();
       throw err;
-    });;
+    });
   });
 });

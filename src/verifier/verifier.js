@@ -1,16 +1,14 @@
-const path = require('path');
-const nock = require('nock');
-const fs = require('../utils/fs');
 const Schema = require('../schema');
+
 const {
   StatusVerificationError,
   ObjectVerificationError,
   ConnectionRefusedError
 } = require('../errors');
 
-function Verifier(http) {
+const Verifier = function(http) {
   this.http = http;
-}
+};
 
 Verifier.prototype.verify = function(contract) {
   return Promise.all(Object.keys(contract.interactions).map(key => {
