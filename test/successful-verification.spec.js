@@ -79,7 +79,7 @@ describe('Successful Verification Test', () => {
     });
 
     it('should post the title', () => {
-      return api.postTitle('Cool Tilte').then(title => {
+      return api.postTitle('Cool Title').then(title => {
         expect(title).to.equal('Cool Title');
       });
     });

@@ -54,6 +54,46 @@ describe('Contract', () => {
         expect(res.data).to.have.length(0);
       });
     });
+
+    it('should add an interaction when request body is defined', () => {
+      const c = new Contract({ port: 4567 });
+      c.interaction({
+        request: {
+          method: 'POST',
+          path: '/interaction',
+          body: {
+            type: Types.OBJECT,
+            value: {
+              super: 'man'
+            },
+            fields: {
+              super: {
+                type: 'string'
+              }
+            }
+          }
+        },
+        response: {
+          status: 201,
+          body: {
+            type: Types.OBJECT,
+            value: {
+              super: 'woman'
+            },
+            fields: {
+              super: {
+                type: 'string'
+              }
+            }
+          }
+        }
+      });
+
+      return axios.post('http://localhost:4567/interaction', { super: 'man' }).then(res => {
+        expect(res.status).to.equal(201);
+        expect(res.data.super).to.equal('woman');
+      });
+    });
   });
 
   describe('finalize', () => {

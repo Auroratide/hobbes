@@ -170,4 +170,33 @@ describe('Failed Verification Test', () => {
       });
     });
   });
+
+  describe('POST', () => {
+    const createInteraction = (expectedReqBody, expectedResBody) => contract.interaction({
+      request: {
+        method: 'POST',
+        path: '/endpoint',
+        body: expectedReqBody
+      },
+      response: {
+        status: 201,
+        body: expectedResBody
+      }
+    });
+
+    it('should fail if request made does not match expected body', () => {
+      newContract();
+      createInteraction(hobbes.is.object({
+        id: hobbes.is.string('123')
+      }), hobbes.is.object({
+        title: hobbes.is.string('title')
+      }));
+
+      return api.postTitle('title').then(title => {
+        expect(title).to.equal('title');
+      }).then(() => {
+        throw new Error('Passed verification, but should have failed!');
+      }, err => {});
+    });
+  });
 });
