@@ -1,15 +1,11 @@
 const path = require('path');
-const nock = require('nock');
 const fs = require('../utils/fs');
-
-const withoutInterceptors = interactions => Object.keys(interactions).reduce((i, key) => {
-  i[key] = {
-    request: interactions[key].request,
-    response: interactions[key].response
-  };
-
-  return i;
-}, {});
+const {
+  withoutInterceptors,
+  stubHttpRequest
+} = require('./contract.helpers');
+const { validateParam } = require('../utils/helpers');
+const { interactionSchema } = require('./contract.schema');
 
 const Contract = function(options = {}) {
   this.consumer = options.consumer;
@@ -21,9 +17,9 @@ const Contract = function(options = {}) {
 };
 
 Contract.prototype.interaction = function(options) {
-  const interceptor = nock(`http://localhost:${this.port.toString()}`)
-    .intercept(options.request.path, options.request.method, options.request.body ? options.request.body.value : undefined)
-    .reply(options.response.status, options.response.body ? options.response.body.value : undefined);
+  validateParam(options, interactionSchema);
+
+  const interceptor = stubHttpRequest(this.port, options.request, options.response);
 
   const interaction = {
     request: options.request,
