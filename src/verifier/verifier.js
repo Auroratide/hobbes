@@ -3,12 +3,16 @@ const {
   verifyStatusCode,
   verifyBodyMatches
 } = require('./verifier.helpers');
+const { contractSchema } = require('./verifier.schema');
+const { validateParam } = require('../utils/helpers');
 
 const Verifier = function(http) {
   this.http = http;
 };
 
 Verifier.prototype.verify = function(contract) {
+  validateParam(contract, contractSchema);
+
   return Promise.all(Object.keys(contract.interactions).map(key => {
     const requestInfo = contract.interactions[key].request;
     const expectedResponse = contract.interactions[key].response;

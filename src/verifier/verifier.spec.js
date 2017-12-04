@@ -131,6 +131,11 @@ describe('Verifier', () => {
       };
     });
 
+    it('should throw when the contract has null interactions', () => {
+      const contract = {};
+      expect(() => verifier.verify(contract)).to.throw();
+    });
+
     it('should succeed when the contract has no interactions', () => {
       const contract = createContract();
       return verifier.verify(contract);
