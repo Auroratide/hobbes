@@ -8,6 +8,7 @@
     "test:unit": "mocha './src/**/*.spec.js'",
     "test:functional": "mocha './test/**/*.spec.js'",
     "lint": "eslint './{src,test}/**/*.js'",
+    "preview-errors": "mocha './test/preview-error-messaging.js'",
     "clean": "rm -rf contracts"
   },
   "author": {
