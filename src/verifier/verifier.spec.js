@@ -174,7 +174,7 @@ describe('Verifier', () => {
       contract.interactions['GET /endpoint'] = createInteraction();
 
       return shouldReject(verifier.verify(contract)).then(error => {
-        expect(error).to.equal(expectedError);
+        expect(error.errors).to.contain(expectedError);
       });
     });
 
@@ -189,7 +189,7 @@ describe('Verifier', () => {
       contract.interactions['GET /endpoint'] = createInteraction();
 
       return shouldReject(verifier.verify(contract)).then(error => {
-        expect(error).to.equal(expectedError);
+        expect(error.errors).to.contain(expectedError);
       });
     });
 
@@ -205,7 +205,7 @@ describe('Verifier', () => {
       nock.cleanAll();
 
       return shouldReject(verifier.verify(contract)).then(error => {
-        expect(error).to.equal(expectedError);
+        expect(error.errors).to.contain(expectedError);
       });
     });
 

@@ -5,6 +5,7 @@ const {
 } = require('./verifier.helpers');
 const { contractSchema } = require('./verifier.schema');
 const { validateParam } = require('../utils/helpers');
+const CompositeError = require('../errors/CompositeError');
 
 const Verifier = function(http) {
   this.http = http;
@@ -26,8 +27,18 @@ Verifier.prototype.verify = function(contract) {
     return this.http(request)
       .catch(reportConnectionError(request))
       .then(verifyStatusCode(expectedResponse.status, request))
-      .then(verifyBodyMatches(expectedResponse.body, request));
-  }));
+      .then(verifyBodyMatches(expectedResponse.body, request))
+      .catch(error => {
+        return {
+          isError: true,
+          error
+        };
+      });
+  })).then(results => {
+    const errors = results.filter(result => result.isError);
+    if(errors.length > 0)
+      throw new CompositeError(errors.map(e => e.error));
+  });
 };
 
 module.exports = Verifier;
