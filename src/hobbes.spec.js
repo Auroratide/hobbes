@@ -6,9 +6,39 @@ const fs = require('./utils/fs');
 describe('hobbes', () => {
   describe('contract', () => {
     const hobbes = require('./hobbes');
+    let options;
+
+    beforeEach(() => {
+      options = {
+        consumer: 'consumer',
+        provider: 'provider',
+        port: 4567,
+        directory: '.'
+      };
+    });
 
     it('should create an empty contract', () => {
-      expect(hobbes.contract({})).to.be.an.instanceof(Contract);
+      expect(hobbes.contract(options)).to.be.an.instanceof(Contract);
+    });
+
+    it('should throw when options is missing consumer', () => {
+      options.consumer = undefined;
+      expect(() => hobbes.contract(options)).to.throw();
+    });
+
+    it('should throw when options is missing provider', () => {
+      options.provider = undefined;
+      expect(() => hobbes.contract(options)).to.throw();
+    });
+
+    it('should throw when options is missing port', () => {
+      options.port = undefined;
+      expect(() => hobbes.contract(options)).to.throw();
+    });
+
+    it('should throw when options is missing directory', () => {
+      options.directory = undefined;
+      expect(() => hobbes.contract(options)).to.throw();
     });
   });
 
@@ -33,6 +63,14 @@ describe('hobbes', () => {
       }).then(() => {
         td.verify(Verifier.prototype.verify(contract));
       });
+    });
+    
+    it('should throw when options is missing baseURL', () => {
+      expect(() => hobbes.verify({ contract: 'c' })).to.throw();
+    });
+
+    it('should throw when options is missing contract', () => {
+      expect(() => hobbes.verify({ baseURL: 'c' })).to.throw();
     });
   });
 
