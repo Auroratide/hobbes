@@ -15,7 +15,7 @@ npm install --save-dev hobbes
 Write a consumer test.
 
 ```js
-import hobbes from 'hobbes';
+import hobbes, { is } from 'hobbes';
 
 describe('Consumer Test Example', () => {
   const contract = hobbes.contract({
@@ -26,7 +26,9 @@ describe('Consumer Test Example', () => {
   });
 
   describe('GET /endpoint', () => {
-    const EXPECTED_BODY = { value: 1 };
+    const EXPECTED_BODY = is.object({
+      value: is.number(1)
+    });
 
     before(() => {
       contract.interaction({
