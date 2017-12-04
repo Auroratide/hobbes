@@ -2,53 +2,135 @@ const { expect } = require('chai');
 const axios = require('axios');
 const nock = require('nock');
 const td = require('testdouble');
-const Verifier = require('./verifier');
 const Schema = require('../schema');
+const ErrorCodes = require('../constants/error-codes');
+const Methods = require('../constants/methods');
+const {
+  reportConnectionError,
+  verifyStatusCode,
+  verifyBodyMatches
+} = require('./verifier.helpers');
+const { shouldReject } = require('../../test/helpers');
 
 describe('Verifier', () => {
   const BASE_URL = 'http://localhost:4567';
-  let createSchema;
-  let schema;
-  let verifier;
-  const request = axios.create({
-    baseURL: BASE_URL
-  });
 
-  const createContract = () => { 
-    return { interactions: {} };
-  };
+  describe('helpers', () => {
+    describe('reportConnectionError', () => {
+      const req = {};
 
-  const createGet = (path, responseBody) => {
-    td.when(createSchema(responseBody)).thenReturn(schema);
-    td.when(schema.matches(responseBody)).thenReturn(true);
-    td.when(schema.errors()).thenReturn({
-      details: [],
-      _object: {}
+      it('should throw when the error is a connection error', () => {
+        const err = {
+          code: ErrorCodes.CONNECTION_REFUSED,
+          config: { url: '' }
+        };
+
+        expect(() => reportConnectionError(req)(err)).to.throw();
+      });
+
+      it('should return the response when the error is anything but a connection error', () => {
+        const err = {
+          code: 'anything else',
+          response: {}
+        };
+
+        expect(reportConnectionError(req)(err)).to.equal(err.response);
+      });
     });
-    const interceptor = nock(BASE_URL)
-      .get(path)
-      .reply(200, responseBody);
 
-    return {
-      request: {
-        method: 'GET',
-        path
-      },
-      response: {
-        status: 200,
-        body: responseBody
-      },
-      nock: interceptor
-    };
-  };
+    describe('verifyStatusCode', () => {
+      const req = {};
+      
+      it('should throw when the status do not match', () => {
+        const res = { status: 404 };
 
-  beforeEach(() => {
-    schema = { matches: td.function(), errors: td.function() };
-    createSchema = td.replace(Schema, 'create');
-    verifier = new Verifier(request);
+        expect(() => verifyStatusCode(200, req)(res)).to.throw();
+      });
+
+      it('should return the response when the statuses match', () => {
+        const res = { status: 200 };
+
+        expect(verifyStatusCode(200, req)(res)).to.equal(res);
+      });
+    });
+
+    describe('verifyBodiesMatch', () => {
+      let schema;
+      let createSchema;
+      const req = {};
+
+      beforeEach(() => {
+        schema = { matches: td.function(), errors: td.function() };
+        createSchema = td.replace(Schema, 'create');
+      });
+      
+      it('should throw when the bodies do not match', () => {
+        const body = {};
+        const res = { data: body };
+        td.when(createSchema(body)).thenReturn(schema);
+        td.when(schema.matches(body)).thenReturn(false);
+        td.when(schema.errors()).thenReturn({
+          details: [],
+          _object: {}
+        });
+
+        expect(() => verifyBodyMatches({ notMatching: true }, req)(res)).to.throw();
+      });
+
+      it('should return the response when the bodies match', () => {
+        const body = {};
+        const res = { data: body };
+        td.when(createSchema(body)).thenReturn(schema);
+        td.when(schema.matches(body)).thenReturn(true);
+
+        expect(verifyBodyMatches(body, req)(res)).to.equal(res);
+      });
+    });
   });
 
   describe('verify', () => {
+    let helpers;
+    let verifier;
+    let request;
+    let response;
+
+    const http = axios.create({
+      baseURL: BASE_URL
+    });
+
+    const createContract = () => { 
+      return { interactions: {} };
+    };
+
+    const createInteraction = () => {
+      const interceptor = nock(BASE_URL)
+        .intercept(request.path, request.method)
+        .reply(response.status, response.body);
+
+      return {
+        request: Object.assign({}, request),
+        response: Object.assign({}, response),
+        interceptor
+      };
+    };
+
+    beforeEach(() => {
+      helpers = td.replace('./verifier.helpers');
+      const Verifier = require('./verifier');
+
+      verifier = new Verifier(http);
+
+      request = {
+        method: Methods.GET,
+        path: '/endpoint'
+      };
+
+      response = {
+        status: 200,
+        body: { field: 'value' }
+      };
+    });
+
     it('should succeed when the contract has no interactions', () => {
       const contract = createContract();
       return verifier.verify(contract);
@@ -56,85 +138,73 @@ describe('Verifier', () => {
 
     it('should verify a single interaction', () => {
       const contract = createContract();
-      contract.interactions['GET /endpoint'] = createGet('/endpoint', { field: 'value' });
+      contract.interactions['GET /endpoint'] = createInteraction();
 
       return verifier.verify(contract).then(() => {
-        expect(contract.interactions['GET /endpoint'].nock.isDone()).to.be.true;
+        expect(contract.interactions['GET /endpoint'].interceptor.isDone()).to.be.true;
       });
     });
 
     it('should verify multiple interactions', () => {
       const contract = createContract();
-      contract.interactions['GET /endpoint/1'] = createGet('/endpoint/1', { field: 1 });
-      contract.interactions['GET /endpoint/2'] = createGet('/endpoint/2', { field: 2 });
+      request.path = '/endpoint/1';
+      contract.interactions['GET /endpoint/1'] = createInteraction();
+      request.path = '/endpoint/2';
+      contract.interactions['GET /endpoint/2'] = createInteraction();
 
       return verifier.verify(contract).then(() => {
-        expect(contract.interactions['GET /endpoint/1'].nock.isDone()).to.be.true;
-        expect(contract.interactions['GET /endpoint/1'].nock.isDone()).to.be.true;
+        expect(contract.interactions['GET /endpoint/1'].interceptor.isDone()).to.be.true;
+        expect(contract.interactions['GET /endpoint/2'].interceptor.isDone()).to.be.true;
       });
     });
 
     it('should throw when the status does not match', () => {
       const contract = createContract();
 
-      nock(BASE_URL)
-        .get('/bad-endpoint')
-        .reply(404, {});
-      contract.interactions['GET /bad-endpoint'] = createGet('/bad-endpoint', { field: 'value' });
+      const expectedError = new Error();
+      const verifyStatusCode = td.function();
+      td.when(helpers.verifyStatusCode(td.matchers.anything(), td.matchers.anything())).thenReturn(verifyStatusCode);
+      td.when(verifyStatusCode(td.matchers.anything())).thenThrow(expectedError);
 
-      return new Promise((resolve, reject) => {
-        verifier.verify(contract).then(() => {
-          reject('Promise was resolved but should have been rejected');
-        }).catch(err => {
-          expect(err.name).to.equal('StatusVerificationError');
-          resolve();
-        }).catch(err => {
-          reject(err);
-        });
+      contract.interactions['GET /endpoint'] = createInteraction();
+
+      return shouldReject(verifier.verify(contract)).then(error => {
+        expect(error).to.equal(expectedError);
       });
     });
 
-    it('should throw when the response body does not match', () => {
+    it('should throw when the body does not match', () => {
       const contract = createContract();
-      contract.interactions['GET /endpoint'] = createGet('/endpoint', { field: 'value' });
-      td.when(schema.matches({ field: 'value' })).thenReturn(false);
 
-      return new Promise((resolve, reject) => {
-        verifier.verify(contract).then(() => {
-          reject('Promise was resolved but should have been rejected');
-        }).catch(err => {
-          expect(err.name).to.equal('ObjectVerificationError');
-          resolve();
-        }).catch(err => {
-          reject(err);
-        });
+      const expectedError = new Error();
+      const verifyBodyMatches = td.function();
+      td.when(helpers.verifyBodyMatches(td.matchers.anything(), td.matchers.anything())).thenReturn(verifyBodyMatches);
+      td.when(verifyBodyMatches(td.matchers.anything())).thenThrow(expectedError);
+
+      contract.interactions['GET /endpoint'] = createInteraction();
+
+      return shouldReject(verifier.verify(contract)).then(error => {
+        expect(error).to.equal(expectedError);
       });
     });
 
     it('should throw when the connection to server failed', () => {
-      nock.cleanAll();
       const contract = createContract();
-      contract.interactions['GET /endpoint'] = {
-        request: {
-          method: 'GET',
-          path: '/endpoint'
-        },
-        response: {
-          status: 200
-        }
-      };
 
-      return new Promise((resolve, reject) => {
-        verifier.verify(contract).then(() => {
-          reject('Promise was resolved but should have been rejected');
-        }).catch(err => {
-          expect(err.name).to.equal('ConnectionRefusedError');
-          resolve();
-        }).catch(err => {
-          reject(err);
-        });
+      const expectedError = new Error();
+      const reportConnectionError = td.function();
+      td.when(helpers.reportConnectionError(td.matchers.anything())).thenReturn(reportConnectionError);
+      td.when(reportConnectionError(td.matchers.anything())).thenThrow(expectedError);
+
+      contract.interactions['GET /endpoint'] = createInteraction();
+      nock.cleanAll();
+
+      return shouldReject(verifier.verify(contract)).then(error => {
+        expect(error).to.equal(expectedError);
       });
     });
+
+    afterEach(() => nock.cleanAll());
   });
 
   afterEach(() => td.reset());
