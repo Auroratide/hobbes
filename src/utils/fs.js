@@ -7,7 +7,7 @@ const writeJson = (filepath, contents) => new Promise((resolve, reject) => {
     if(err) {
       reject(err);
     } else {
-      fs.writeFile(filepath, JSON.stringify(contents), err => {
+      fs.writeFile(filepath, JSON.stringify(contents, null, 2), err => {
         if(err) {
           reject(err);
         } else {

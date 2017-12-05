@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.2.1
+
+* Make contract files more human-readable
+
 ## 0.2.0 (03 Dec 2017)
 
 * Can specify a request body for non-GET interactions
