@@ -3,6 +3,7 @@
 ## 0.2.1
 
 * Make contract files more human-readable
+* Added query param support
 
 ## 0.2.0 (03 Dec 2017)
 
