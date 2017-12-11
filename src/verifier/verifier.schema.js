@@ -10,7 +10,8 @@ module.exports.contractSchema = joi.object().keys({
       method: joi.any().valid(Methods.all()).required(),
       body: joi.object().keys({
         value: joi.any().required()
-      }).unknown()
+      }).unknown(),
+      query: joi.object().unknown()
     }).unknown().required(),
     response: joi.object().keys({
       status: joi.number().required()

@@ -120,6 +120,17 @@ describe('Contract', () => {
         expect(stubHttpRequest(PORT, req, res)).to.exist;
       });
 
+      it('should reply when a GET request is made with the matching query params', () => {
+        req.query = { type: 'fruit' };
+        stubHttpRequest(PORT, req, res);
+
+        return axios.get(`http://localhost:${PORT}/interaction/1`, {
+          params: { type: 'fruit' }
+        }).then(res => {
+          expect(res.status).to.equal(200);
+        });
+      });
+
       afterEach(() => {
         nock.cleanAll();
       });

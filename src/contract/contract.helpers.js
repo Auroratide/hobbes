@@ -16,7 +16,11 @@ module.exports.stubHttpRequest = (port, req = {}, res = {}) => {
   validateParam(req, requestSchema);
   validateParam(res, responseSchema);
 
-  return nock(`http://localhost:${port}`)
-    .intercept(req.path, req.method, req.body ? req.body.value : undefined)
-    .reply(res.status, res.body ? res.body.value : undefined);
+  let interceptor = nock(`http://localhost:${port}`)
+    .intercept(req.path, req.method, req.body ? req.body.value : undefined);
+
+  if(req.query)
+    interceptor = interceptor.query(req.query);
+
+  return interceptor.reply(res.status, res.body ? res.body.value : undefined);
 };

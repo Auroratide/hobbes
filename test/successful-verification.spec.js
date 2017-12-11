@@ -85,6 +85,38 @@ describe('Successful Verification Test', () => {
     });
   });
 
+  describe('GET /endpoints?type', () => {
+    const EXPECTED_BODY = hobbes.is.object({
+      items: hobbes.is.arrayOf(hobbes.is.object({
+        type: hobbes.is('fruit'),
+        name: hobbes.is.string('banana')
+      }))
+    });
+
+    before(() => {
+      contract.interaction({
+        request: {
+          method: 'GET',
+          path: '/endpoints',
+          query: {
+            type: 'fruit'
+          }
+        },
+        response: {
+          status: 200,
+          body: EXPECTED_BODY
+        }
+      });
+    });
+
+    it('should return a list of fruits', () => {
+      return api.getFruits().then(fruits => {
+        expect(fruits[0].type).to.equal('fruit');
+        expect(fruits[0].name).to.equal('banana');
+      });
+    });
+  });
+
   after(() => {
     let serverInstance;
     return contract.finalize().then(() => {

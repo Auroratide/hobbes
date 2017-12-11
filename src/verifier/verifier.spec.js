@@ -105,6 +105,7 @@ describe('Verifier', () => {
     const createInteraction = () => {
       const interceptor = nock(BASE_URL)
         .intercept(request.path, request.method)
+        .query(request.query)
         .reply(response.status, response.body);
 
       return {
@@ -160,6 +161,16 @@ describe('Verifier', () => {
       return verifier.verify(contract).then(() => {
         expect(contract.interactions['GET /endpoint/1'].interceptor.isDone()).to.be.true;
         expect(contract.interactions['GET /endpoint/2'].interceptor.isDone()).to.be.true;
+      });
+    });
+
+    it('should verify when the request has a query', () => {
+      const contract = createContract();
+      request.query = { param: 'value' };
+      contract.interactions['GET /endpoint'] = createInteraction();
+
+      return verifier.verify(contract).then(() => {
+        expect(contract.interactions['GET /endpoint'].interceptor.isDone()).to.be.true;
       });
     });
 

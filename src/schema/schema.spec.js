@@ -267,6 +267,34 @@ describe('schema', () => {
 
       expect(schema.matches(['hello', 5, '!'])).to.be.false;
     });
+
+    it('should return false when the array is empty', () => {
+      const schema = Schema.create({
+        type: Types.ARRAY,
+        of: {
+          type: Types.STRING
+        }
+      });
+
+      expect(schema.matches([])).to.be.false;
+    });
+
+    it('should return false when the array is an empty array of objects', () => {
+      const schema = Schema.create({
+        type: Types.ARRAY,
+        of: {
+          type: Types.OBJECT,
+          fields: {
+            key: {
+              type: Types.STRING
+            }
+          }
+        }
+      });
+
+      expect(schema.matches([])).to.be.false;
+    });
+
   });
 
   describe('errors', () => {

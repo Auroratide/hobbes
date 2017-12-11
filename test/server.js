@@ -30,4 +30,14 @@ app.post('/endpoint', (req, res) => {
   });
 });
 
+app.get('/endpoints', (req, res) => {
+  const arr = [];
+  if(req.query.type === 'fruit') {
+    arr.push({ type: 'fruit', name: 'apple' });
+  }
+  res.status(200).json({
+    items: arr
+  });
+});
+
 module.exports = app;

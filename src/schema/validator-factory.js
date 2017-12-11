@@ -20,7 +20,7 @@ const object = (fields) =>
   }, {})).unknown();
 
 const array = (obj) =>
-  joi.array().items(create(obj));
+  joi.array().items(create(obj)).min(1);
 
 const forbidden = () =>
   joi.any().forbidden();

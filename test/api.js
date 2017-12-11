@@ -15,7 +15,16 @@ const getPost = () => request.get('/endpoint').then(res => {
 
 const postTitle = (title) => request.post('/endpoint', { title }).then(res => res.data.title);
 
+const getFruits = () => request.get('/endpoints', {
+  params: {
+    type: 'fruit'
+  }
+}).then(res => {
+  return res.data.items;
+});
+
 module.exports = {
   getPost,
-  postTitle
+  postTitle,
+  getFruits
 };
