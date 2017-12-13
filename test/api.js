@@ -23,8 +23,13 @@ const getFruits = () => request.get('/endpoints', {
   return res.data.items;
 });
 
+const getSecret = () => request.get('/secret', {
+  headers: { 'client-id': 'secret' }
+}).then(res => res.data.id);
+
 module.exports = {
   getPost,
   postTitle,
-  getFruits
+  getFruits,
+  getSecret
 };

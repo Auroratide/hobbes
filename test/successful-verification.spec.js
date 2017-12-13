@@ -117,6 +117,35 @@ describe('Successful Verification Test', () => {
     });
   });
 
+  describe('GET /secret', () => {
+    const EXPECTED_BODY = hobbes.is.object({
+      id: hobbes.is.string('345')
+    });
+
+    before(() => {
+      contract.interaction({
+        request: {
+          method: 'GET',
+          path: '/secret',
+          headers: {
+            'accept': 'application/json',
+            'client-id': 'secret'
+          }
+        },
+        response: {
+          status: 200,
+          body: EXPECTED_BODY
+        }
+      });
+    });
+
+    it('should return the secret id', () => {
+      return api.getSecret().then(id => {
+        expect(id).to.equal('345');
+      });
+    });
+  });
+
   after(() => {
     let serverInstance;
     return contract.finalize().then(() => {

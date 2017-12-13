@@ -40,4 +40,11 @@ app.get('/endpoints', (req, res) => {
   });
 });
 
+app.get('/secret', (req, res) => {
+  if(req.headers['client-id'] === 'secret')
+    res.status(200).json({ id: '987' });
+  else
+    res.status(401).json({ error: 'Unauthorized' });
+});
+
 module.exports = app;

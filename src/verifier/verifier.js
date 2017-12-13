@@ -22,6 +22,7 @@ Verifier.prototype.verify = function(contract) {
       method: requestInfo.method,
       url: requestInfo.path,
       params: requestInfo.query,
+      headers: requestInfo.headers,
       data: requestInfo.body ? requestInfo.body.value : undefined
     };
 
