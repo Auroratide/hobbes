@@ -4,6 +4,7 @@
 
 * Make contract files more human-readable
 * Added query param support
+* Added basic support for headers
 
 ## 0.2.0 (03 Dec 2017)
 
