@@ -1,10 +1,13 @@
 # Changelog
 
-## 0.2.1
+## 0.2.2 (15 Dec 2017)
+
+* Basic support for request headers
+
+## 0.2.1 (11 Dec 2017)
 
 * Make contract files more human-readable
 * Added query param support
-* Added basic support for headers
 
 ## 0.2.0 (03 Dec 2017)
 
